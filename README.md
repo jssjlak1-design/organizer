@@ -1,20 +1,19 @@
-# 📁 File Organizer
+import shutil
+from pathlib import Path
 
-Простой и быстрый Python-скрипт для автоматической сортировки файлов в папке «Загрузки» (Downloads) по категориям на основе их форматов.
+TARGET = Path.home() / "Downloads"
 
-## ✨ Как это работает
-Скрипт сканирует целевую директорию и мгновенно распределяет файлы по следующим папкам:
-* 🖼️ **Изображения** — `.jpg`, `.jpeg`, `.png`, `.gif`, `.webp`
-* 📄 **Документы** — `.pdf`, `.docx`, `.doc`, `.txt`, `.xlsx`
-* 🎬 **Видео** — `.mp4`, `.mkv`, `.avi`, `.mov`
-* 🎵 **Аудио** — `.mp3`, `.wav`, `.ogg`
-* 📦 **Архивы** — `.zip`, `.rar`, `.7z`
-* 📂 **Другое** — все остальные типы файлов
+CATEGORIES = {
+    "Изображения": [".jpg", ".jpeg", ".png", ".gif", ".webp"],
+    "Документы": [".pdf", ".docx", ".doc", ".txt", ".xlsx"],
+    "Видео": [".mp4", ".mkv", ".avi", ".mov"],
+    "Аудио": [".mp3", ".wav", ".ogg"],
+    "Архивы": [".zip", ".rar", ".7z"],
+}
 
-## 🚀 Запуск
-1. Убедитесь, что у вас установлен **Python 3**.
-2. Запустите скрипт из терминала или двойным кликом:
-   ```bash
-   python organizer.py
-
-   ```
+for f in TARGET.iterdir():
+    if f.is_file() and f.name != "organizer.py":
+        folder = next((k for k, v in CATEGORIES.items() if f.suffix.lower() in v), "Другое")
+        (TARGET / folder).mkdir(exist_ok=True)
+        shutil.move(str(f), str(TARGET / folder / f.name))
+        
